@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Movie Shelf
 
-## Getting Started
+## 🎬 概要
 
-First, run the development server:
+「My Movie Shelf」は、あなたが**「観たい」**と思っている映画を整理し、**「視聴済み」**の記録を簡単につけることができる、シンプルで高速なパーソナル映画リスト管理アプリケーションです。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+煩雑な映画情報の海から、あなただけの珠玉のコレクションを並べた「棚（Shelf）」を作りましょう。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ 主な機能（MVP）
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+本アプリケーションは、必要最低限の機能（MVP）に絞って開発を進めています。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| カテゴリ | 機能 | 詳細 |
+| :--- | :--- | :--- |
+| **認証** | ソーシャルログイン | GoogleまたはGitHubアカウントを利用した簡単なログイン・ログアウト。 |
+| **映画検索** | 高速検索機能 | TMDb APIを利用し、映画タイトルを検索。入力の**停止時**に候補を表示し、API負荷を軽減。 |
+| **リスト管理** | 映画の追加 | 検索結果から映画のポスター、タイトル、公開年を確認してリストに追加。 |
+| **リスト表示** | 観たい/視聴済み | 「観たいリスト」と「視聴済みリスト」の2つの領域で映画を管理。 |
+| **ステータス変更** | 視聴ステータスの変更 | 映画を視聴後、ボタン一つでリスト間を移動（観たい ⇔ 視聴済み）。 |
+| **削除** | リストからの削除 | 誤って削除しても復元が可能な**論理削除**を採用。 |
 
-## Learn More
+## ⚙️ 技術スタック
 
-To learn more about Next.js, take a look at the following resources:
+本アプリケーションは、パフォーマンスとスケーラビリティを考慮したモダンな構成を採用しています。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **フロントエンド / フレームワーク:** Next.js (React)
+* **ホスティング:** Vercel
+* **データベース:** Neon (PostgreSQL互換)
+* **認証:** NextAuth.js
+* **映画データ:** The Movie Database (TMDb) API
+* **ORM:** Prisma (データベース連携)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚧 開発ロードマップ（予定）
 
-## Deploy on Vercel
+現在は「必須ゴール（MVP）」の達成に注力していますが、MVP完了後には以下の機能拡張を予定しています。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🚀 ストレッチゴール
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* リストの**ソート機能**（登録日順、タイトル順など）の追加。
+* 映画情報の表示に、監督や出演者などの**詳細情報**の追加。
+* 画像やあらすじがない場合（Nullデータ）の**フォールバック表示**の実装。
+* TMDb利用規約に基づく**帰属表示**の追加。
+
+---
+
+## ⚠️ データ提供元について
+
+本アプリケーションの映画データは、**The Movie Database (TMDb) API**から提供されています。
+
+> This product uses the TMDb API but is not endorsed or certified by TMDb.
+
+（**注**: 正式リリース前に、TMDbのロゴや帰属表示のルールに従ってフッターなどに正確に記載します。）
+
+---
+
+## 🤝 貢献
+
+（将来的にオープンソースとして公開する場合に記載します。現在は開発チーム名または個人の名前を記載。）
