@@ -10,5 +10,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             clientSecret: process.env.AUTH_GOOGLE_SECRET!,
         }),
     ],
+    // Vercel などプロキシ環境向け
+    trustHost: true,
     // 必要に応じて callbacks や pages などをここに追加
 })
