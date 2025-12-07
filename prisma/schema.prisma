@@ -13,10 +13,45 @@ datasource db {
   provider = "postgresql"
 }
 
+// ユーザー情報（Google認証したユーザーの情報を保存）
 model User {
-  id    String @id @default(uuid()) // ユーザーのユニークID
-  email String @unique             // 認証に使用するメールアドレス
-  name  String?                    // ユーザー名 (NextAuthで取得可能)
+  id         String      @id @default(uuid()) // ユーザー固有のID
+  email      String      @unique // メールアドレス（重複不可）
+  name       String? // 名前（任意）
+  createdAt  DateTime    @default(now()) // 作成日時
+  updatedAt  DateTime    @updatedAt // 更新日時
+  userMovies UserMovie[] // このユーザーの映画リスト
+}
 
-  // 観たい映画とのリレーションを後で追加します
+// 映画情報（TMDb APIから取得した映画データを保存 / 同じ映画は1回だけ保存）
+model Movie {
+  id          String      @id @default(uuid()) // 映画固有のID
+  tmdbId      Int         @unique // TMDb APIの映画ID（重複不可）
+  title       String // 映画タイトル
+  posterPath  String? // ポスター画像のパス
+  releaseDate String? // 公開年
+  overview    String? // あらすじ
+  createdAt   DateTime    @default(now()) // 登録日時
+  userMovies  UserMovie[] // この映画を登録しているユーザー
+}
+
+// ユーザーと映画の関連（「誰が」「どの映画を」「どのステータスで」持っているかを管理）
+model UserMovie {
+  id        String      @id @default(uuid())
+  userId    String // どのユーザーの？
+  movieId   String // どの映画の？
+  status    WatchStatus @default(WANT_TO_WATCH) // 「観たい」or「視聴済み」
+  isDeleted Boolean     @default(false) // 削除フラグ（論理削除）
+  createdAt DateTime    @default(now()) // 登録日時
+  updatedAt DateTime    @updatedAt // 更新日時
+  user      User        @relation(fields: [userId], references: [id])
+  movie     Movie       @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId]) // 同じユーザーが同じ映画を重複登録できないようにする
+}
+
+// 視聴ステータス（映画のステータスを2種類で管理）
+enum WatchStatus {
+  WANT_TO_WATCH // 観たい
+  WATCHED // 視聴済み
 }
