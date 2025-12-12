@@ -1,11 +1,19 @@
-import { auth } from "@/auth"
+"use client"
+
+import { useState } from "react"
 import { MovieList } from "@/components/movies/MovieList"
+import { MovieSearch } from "@/components/movies/MovieSearch"
 
-export default async function DashboardPage() {
-  const session = await auth()
+type Movie = {
+  id: string
+  title: string
+  posterPath: string | null
+  releaseDate?: string
+  status: "WANT_TO_WATCH" | "WATCHED"
+}
 
-  // ダミーデータ
-  const wantToWatchMovies = [
+export default function DashboardPage() {
+  const [wantToWatchMovies, setWantToWatchMovies] = useState<Movie[]>([
     {
       id: "1",
       title: "ショーガール",
@@ -20,9 +28,9 @@ export default async function DashboardPage() {
       releaseDate: "1995",
       status: "WANT_TO_WATCH" as const,
     },
-  ]
+  ])
 
-  const watchedMovies = [
+  const [watchedMovies] = useState<Movie[]>([
     {
       id: "3",
       title: "爆弾",
@@ -37,7 +45,26 @@ export default async function DashboardPage() {
       releaseDate: "2022",
       status: "WATCHED" as const,
     },
-  ]
+  ])
+
+  const handleSelectMovie = (movie: {
+    tmdbId: number
+    title: string
+    posterPath: string | null
+    releaseDate: string
+  }) => {
+    // 一旦「観たいリスト」に追加
+    const newMovie: Movie = {
+      id: String(movie.tmdbId),
+      title: movie.title,
+      posterPath: movie.posterPath,
+      releaseDate: movie.releaseDate,
+      status: "WANT_TO_WATCH",
+    }
+
+    setWantToWatchMovies([...wantToWatchMovies, newMovie])
+    alert(`「${movie.title}」を観たいリストに追加しました！`)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,13 +73,11 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">
             My Movie Shelf
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
-            ようこそ、{session?.user?.name}さん
-          </p>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8">
+        <MovieSearch onSelectMovie={handleSelectMovie} />
         <MovieList title="観たいリスト" movies={wantToWatchMovies} />
         <MovieList title="視聴済みリスト" movies={watchedMovies} />
       </main>
