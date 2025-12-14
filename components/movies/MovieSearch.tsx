@@ -12,18 +12,16 @@ type Movie = {
 }
 
 type MovieSearchProps = {
-    onSelectMovie: (movie: Movie) => void // 追加成功時のコールバック
+    onMovieAdded: () => void
 }
 
-export function MovieSearch({ onSelectMovie }: MovieSearchProps) {
+export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
     const [query, setQuery] = useState("")
     const [results, setResults] = useState<Movie[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
 
-    // デバウンス処理：入力停止後500msで検索
     useEffect(() => {
-        // 3文字未満なら検索しない
         if (query.trim().length < 3) {
             setResults([])
             setError("")
@@ -51,11 +49,42 @@ export function MovieSearch({ onSelectMovie }: MovieSearchProps) {
             } finally {
                 setIsLoading(false)
             }
-        }, 500) // 500ms待機
+        }, 500)
 
-        // クリーンアップ：次の入力があったらタイマーをキャンセル
         return () => clearTimeout(timer)
     }, [query])
+
+    // 映画をDBに追加
+    const handleAddMovie = async (movie: Movie) => {
+        try {
+            const response = await fetch("/api/movies/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    tmdbId: movie.tmdbId,
+                    title: movie.title,
+                    posterPath: movie.posterPath,
+                    releaseDate: movie.releaseDate,
+                    overview: movie.overview,
+                }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || "映画の追加に失敗しました")
+            }
+
+            alert(`「${movie.title}」を観たいリストに追加しました！`)
+            setQuery("")
+            setResults([])
+            onMovieAdded()
+        } catch (err) {
+            alert(err instanceof Error ? err.message : "映画の追加に失敗しました")
+        }
+    }
 
     return (
         <div className="mb-8">
@@ -83,11 +112,7 @@ export function MovieSearch({ onSelectMovie }: MovieSearchProps) {
                     {results.map((movie) => (
                         <button
                             key={movie.tmdbId}
-                            onClick={() => {
-                                onSelectMovie(movie)
-                                setQuery("") // 選択後、検索窓をクリア
-                                setResults([])
-                            }}
+                            onClick={() => handleAddMovie(movie)}
                             className="flex w-full items-start gap-4 border-b p-4 text-left hover:bg-gray-50"
                         >
                             {movie.posterPath ? (
