@@ -11,9 +11,10 @@ type Movie = {
 type MovieListProps = {
     title: string
     movies: Movie[]
+    onStatusChanged: () => void
 }
 
-export function MovieList({ title, movies }: MovieListProps) {
+export function MovieList({ title, movies, onStatusChanged }: MovieListProps) {
     return (
         <div className="mb-8">
             <h2 className="mb-4 text-2xl font-bold text-gray-900">{title}</h2>
@@ -25,10 +26,12 @@ export function MovieList({ title, movies }: MovieListProps) {
                     {movies.map((movie) => (
                         <MovieCard
                             key={movie.id}
+                            movieId={movie.id}
                             title={movie.title}
                             posterPath={movie.posterPath}
                             releaseDate={movie.releaseDate}
                             status={movie.status}
+                            onStatusChanged={onStatusChanged}
                         />
                     ))}
                 </div>
