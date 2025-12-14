@@ -64,6 +64,11 @@ export function DashboardClient({ userName, wantToWatch, watched }: DashboardCli
         // - Server Componentのデータだけが最新になる
     }
 
+    // ステータス変更後の処理
+    const handleStatusChanged = () => {
+        router.refresh()
+    }
+
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // JSX（画面表示）
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -89,10 +94,10 @@ export function DashboardClient({ userName, wantToWatch, watched }: DashboardCli
                 {/* ↑ 映画追加成功時に handleMovieAdded が呼ばれる */}
 
                 {/* 映画リスト */}
-                <MovieList title="観たいリスト" movies={wantToWatch} />
+                <MovieList title="観たいリスト" movies={wantToWatch} onStatusChanged={handleStatusChanged} />
                 {/* ↑ Server Componentから渡された最新データを表示 */}
 
-                <MovieList title="視聴済みリスト" movies={watched} />
+                <MovieList title="視聴済みリスト" movies={watched} onStatusChanged={handleStatusChanged} />
                 {/* ↑ Server Componentから渡された最新データを表示 */}
             </main>
         </div>
