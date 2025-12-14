@@ -3,7 +3,7 @@ import Image from "next/image"
 type MovieCardProps = {
     title: string
     posterPath: string | null
-    releaseDate?: string
+    releaseDate?: string | null
     status: "WANT_TO_WATCH" | "WATCHED"
 }
 

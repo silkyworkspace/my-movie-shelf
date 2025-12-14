@@ -12,7 +12,7 @@ type Movie = {
 }
 
 type MovieSearchProps = {
-    onSelectMovie: (movie: Movie) => void
+    onSelectMovie: (movie: Movie) => void // 追加成功時のコールバック
 }
 
 export function MovieSearch({ onSelectMovie }: MovieSearchProps) {

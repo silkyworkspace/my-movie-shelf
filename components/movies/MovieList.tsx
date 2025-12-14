@@ -4,7 +4,7 @@ type Movie = {
     id: string
     title: string
     posterPath: string | null
-    releaseDate?: string
+    releaseDate?: string | null
     status: "WANT_TO_WATCH" | "WATCHED"
 }
 
