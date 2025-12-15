@@ -33,6 +33,7 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
     const [query, setQuery] = useState("")           // 検索キーワード
     const [results, setResults] = useState<Movie[]>([]) // 検索結果
     const [isLoading, setIsLoading] = useState(false)   // ローディング状態
+    const [isAdding, setIsAdding] = useState(false)
     const [error, setError] = useState("")              // エラーメッセージ
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -80,6 +81,8 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     const handleAddMovie = async (movie: Movie) => {
+        setIsAdding(true)
+
         try {
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             // ステップ1: API Routeにリクエストを送る
@@ -96,7 +99,7 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
                     title: movie.title,
                     posterPath: movie.posterPath,
                     releaseDate: movie.releaseDate,
-                    overview: movie.overview,
+                    overview: movie.overview, //映画のあらすじ・概要
                 }),
             })
 
@@ -140,8 +143,15 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
             if (!response.ok) {
-                // HTTPステータスコードが200番台以外（エラー）
-                throw new Error(data.error || "映画の追加に失敗しました")
+                // エラーメッセージを改善
+                if (response.status === 400 && data.error?.includes("すでに登録")) {
+                    alert(`「${movie.title}」はすでにリストに登録されています`)
+                } else if (response.status === 401) {
+                    alert("ログインセッションが切れました。再度ログインしてください")
+                } else {
+                    alert(data.error || "映画の追加に失敗しました")
+                }
+                return
             }
 
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -171,6 +181,8 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
 
             // ユーザーにエラーを通知
             alert(err instanceof Error ? err.message : "映画の追加に失敗しました")
+        } finally {
+             setIsAdding(false)
         }
     }
 
@@ -234,8 +246,11 @@ export function MovieSearch({ onMovieAdded }: MovieSearchProps) {
                                 <p className="text-sm text-gray-500">{movie.releaseDate}</p>
                                 {movie.overview && (
                                     <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-                                        {movie.overview}
+                                        {movie.overview} {/* 映画のあらすじ・概要 */}
                                     </p>
+                                )}
+                                {isAdding && (
+                                    <p className="mt-2 text-sm text-blue-600">追加中...</p>
                                 )}
                             </div>
                         </button>

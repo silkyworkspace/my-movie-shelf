@@ -50,13 +50,26 @@ export default function MovieCard({
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || "ステータスの更新に失敗しました")
+                // エラーメッセージを改善
+                if (response.status === 401) {
+                    alert("ログインセッションが切れました。再度ログインしてください")
+                } else if (response.status === 404) {
+                    alert("映画が見つかりませんでした。ページを更新してください")
+                } else {
+                    alert(data.error || "ステータスの更新に失敗しました")
+                }
+                return
             }
 
             // 成功時、親コンポーネントに通知
             onStatusChanged()
         } catch (err) {
-            alert(err instanceof Error ? err.message : "ステータスの更新に失敗しました")
+            // ネットワークエラー等
+            if (err instanceof TypeError && err.message.includes("fetch")) {
+                alert("ネットワークエラーが発生しました。インターネット接続を確認してください")
+            } else {
+                alert(err instanceof Error ? err.message : "予期しないエラーが発生しました")
+            }
         } finally {
             setIsUpdating(false)
         }
@@ -84,14 +97,27 @@ export default function MovieCard({
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || "削除に失敗しました")
+                // エラーメッセージを改善
+                if (response.status === 401) {
+                    alert("ログインセッションが切れました。再度ログインしてください")
+                } else if (response.status === 404) {
+                    alert("映画が見つかりませんでした。既に削除されている可能性があります")
+                } else {
+                    alert(data.error || "削除に失敗しました")
+                }
+                return
             }
 
             // 成功時、親コンポーネントに通知
             onStatusChanged()
 
         } catch (err) {
-            alert(err instanceof Error ? err.message : "削除に失敗しました")
+            // ネットワークエラー等
+            if (err instanceof TypeError && err.message.includes("fetch")) {
+                alert("ネットワークエラーが発生しました。インターネット接続を確認してください")
+            } else {
+                alert(err instanceof Error ? err.message : "予期しないエラーが発生しました")
+            }
         } finally {
             setIsDeleting(false)
         }
