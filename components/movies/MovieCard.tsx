@@ -23,6 +23,8 @@ export default function MovieCard({
 
     const [isUpdating, setIsUpdating] = useState(false)
 
+    const [isDeleting, setIsDeleting] = useState(false)
+
     // TMDbの画像ベースURL
     const imageBaseUrl = "https://image.tmdb.org/t/p/w500"
     const imageSrc = posterPath ? `${imageBaseUrl}${posterPath}` : "/placeholder-movie.png"
@@ -60,6 +62,41 @@ export default function MovieCard({
         }
     }
 
+    const handleDelete = async () => {
+        // 確認ダイアログ
+        if (!confirm(`「${title}」をリストから削除しますか？`)) {
+            return
+        }
+
+        setIsDeleting(true)
+
+        try {
+            const response = await fetch("/api/movies/delete", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    movieId,
+                }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || "削除に失敗しました")
+            }
+
+            // 成功時、親コンポーネントに通知
+            onStatusChanged()
+
+        } catch (err) {
+            alert(err instanceof Error ? err.message : "削除に失敗しました")
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
     return (
         <div className="rounded-lg border bg-white p-4 shadow-sm">
             {/* ポスター画像 */}
@@ -84,8 +121,8 @@ export default function MovieCard({
                 <div className="mt-2">
                     <span
                         className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${status === "WATCHED"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
                             }`}
                     >
                         {status === "WATCHED" ? "視聴済み" : "観たい"}
@@ -99,6 +136,15 @@ export default function MovieCard({
                     className="mt-3 w-full rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                 >
                     {isUpdating ? "更新中..." : status === "WATCHED" ? "観たいに戻す" : "視聴済みにする"}
+                </button>
+
+                {/* 削除ボタン */}
+                <button
+                    onClick={handleDelete}
+                    disabled={isUpdating || isDeleting}
+                    className="mt-2 w-full rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+                >
+                    {isDeleting ? "削除中" : "リストから削除"}
                 </button>
             </div>
         </div>
